@@ -1,0 +1,8 @@
+{
+  "name": "household-finance",
+  "version": "1.0.0",
+  "description": "부부 가계부 Notion 관리 플러그인 - 월별 예산, 수입/지출, 빚 상환, 저축, 투자, 고정지출 관리",
+  "author": {
+    "name": "young"
+  }
+}
