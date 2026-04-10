@@ -12,21 +12,25 @@ allowed-tools:
 ## 시작 전
 
 1. 반드시 이 스킬 디렉토리의 `references/notion-schema.md`를 읽어서 DB 스키마를 확인한다.
-2. DB ID는 플러그인 settings.json의 환경변수에서 가져온다:
+2. DB ID는 config 파일 `~/.config/household-finance/config.json`에서 읽는다.
 
-| DB | 환경변수 |
+config 파일이 없으면 초기 셋업을 진행한다:
+1. 이 스킬 디렉토리의 `references/config-template.json`을 읽는다.
+2. 사용자에게 각 Notion DB의 data_source_id를 물어본다.
+3. 템플릿에 DB ID를 채워서 `~/.config/household-finance/config.json`에 저장한다.
+
+config 파일의 DB ID 매핑:
+
+| DB | config key |
 |---|---|
-| 월별 예산 | `$HOUSEHOLD_FINANCE_DB_MONTHLY_BUDGET` |
-| 고정지출 항목 | `$HOUSEHOLD_FINANCE_DB_FIXED_EXPENSE` |
-| 수입/지출 | `$HOUSEHOLD_FINANCE_DB_INCOME_EXPENSE` |
-| 빚 정리 | `$HOUSEHOLD_FINANCE_DB_DEBT` |
-| 상환 기록 | `$HOUSEHOLD_FINANCE_DB_REPAYMENT` |
-| 저축 목표 | `$HOUSEHOLD_FINANCE_DB_SAVINGS_GOAL` |
-| 저축 기록 | `$HOUSEHOLD_FINANCE_DB_SAVINGS_RECORD` |
-| 투자 관리 | `$HOUSEHOLD_FINANCE_DB_INVESTMENT` |
-
-환경변수가 비어있으면 사용자에게 Notion DB ID 설정을 안내한다:
-"household-finance 플러그인의 settings.json에 Notion DB ID를 설정해주세요. 플러그인 경로의 settings.json > env 항목에 각 DB의 data_source_id를 입력하면 됩니다."
+| 월별 예산 | `databases.monthly_budget` |
+| 고정지출 항목 | `databases.fixed_expense` |
+| 수입/지출 | `databases.income_expense` |
+| 빚 정리 | `databases.debt` |
+| 상환 기록 | `databases.repayment` |
+| 저축 목표 | `databases.savings_goal` |
+| 저축 기록 | `databases.savings_record` |
+| 투자 관리 | `databases.investment` |
 
 ## 핵심 구조: 월별 예산
 
@@ -93,7 +97,7 @@ allowed-tools:
 
 ### 수입/지출 기록
 ```
-parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_INCOME_EXPENSE }
+parent: { data_source_id: config.databases.income_expense }
 properties:
   내역, 날짜, 구분, 카테고리, 금액, 결제수단, 담당, 메모
   월별예산: "https://www.notion.so/{해당월예산페이지ID}"
@@ -101,7 +105,7 @@ properties:
 
 ### 상환 기록
 ```
-parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_REPAYMENT }
+parent: { data_source_id: config.databases.repayment }
 properties:
   내역, 대상 빚, 날짜, 유형, 금액, 메모
   월별예산: "https://www.notion.so/{해당월예산페이지ID}"
@@ -109,7 +113,7 @@ properties:
 
 ### 저축 기록
 ```
-parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_SAVINGS_RECORD }
+parent: { data_source_id: config.databases.savings_record }
 properties:
   내역, 대상 목표, 날짜, 유형, 금액, 메모
   월별예산: "https://www.notion.so/{해당월예산페이지ID}"
@@ -117,14 +121,14 @@ properties:
 
 ### 투자 매매 기록
 ```
-parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_INVESTMENT }
+parent: { data_source_id: config.databases.investment }
 properties:
   종목명, 유형, 매매유형, 매매일, 단가, 보유 수량, 금액, 담당, 메모
 ```
 
 ### 고정지출 항목 등록
 ```
-parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_FIXED_EXPENSE }
+parent: { data_source_id: config.databases.fixed_expense }
 properties:
   항목명, 담당, 유형(완전고정/변동고정), 예산금액, 카테고리,
   적용시작, 적용종료(영구면 비움), 활성(__YES__), 메모
@@ -132,7 +136,7 @@ properties:
 
 ### 월별 예산 생성/수정
 ```
-parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_MONTHLY_BUDGET }
+parent: { data_source_id: config.databases.monthly_budget }
 properties:
   월 예산: "2026년 5월 남편", 담당, 월급, 월,
   고정지출 항목: [필터된 고정지출 페이지 URL JSON 배열]

@@ -1,0 +1,12 @@
+{
+  "databases": {
+    "monthly_budget": "",
+    "fixed_expense": "",
+    "income_expense": "",
+    "debt": "",
+    "repayment": "",
+    "savings_goal": "",
+    "savings_record": "",
+    "investment": ""
+  }
+}
