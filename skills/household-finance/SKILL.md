@@ -9,28 +9,31 @@ allowed-tools:
 
 부부가 함께 쓰는 Notion 가계부에 데이터를 기록하고 조회하는 스킬이다.
 
-## 시작 전
+## 시작 전 (반드시 순서대로)
 
-1. 반드시 이 스킬 디렉토리의 `references/notion-schema.md`를 읽어서 DB 스키마를 확인한다.
-2. DB ID는 config 파일 `~/.config/household-finance/config.json`에서 읽는다.
+**Step 1.** `~/.config/household-finance/config.json` 파일을 Read 도구로 읽는다. 이 파일에 모든 Notion DB의 data_source_id가 들어있다. 이 값들을 이후 모든 Notion API 호출에서 사용해야 한다.
 
-config 파일이 없으면 초기 셋업을 진행한다:
+config 파일이 없으면 초기 셋업:
 1. 이 스킬 디렉토리의 `references/config-template.json`을 읽는다.
 2. 사용자에게 각 Notion DB의 data_source_id를 물어본다.
 3. 템플릿에 DB ID를 채워서 `~/.config/household-finance/config.json`에 저장한다.
 
-config 파일의 DB ID 매핑:
+**Step 2.** `references/notion-schema.md`를 읽어서 DB 스키마를 확인한다.
 
-| DB | config key |
+config.json의 key → DB 매핑:
+
+| config key | DB |
 |---|---|
-| 월별 예산 | `databases.monthly_budget` |
-| 고정지출 항목 | `databases.fixed_expense` |
-| 수입/지출 | `databases.income_expense` |
-| 빚 정리 | `databases.debt` |
-| 상환 기록 | `databases.repayment` |
-| 저축 목표 | `databases.savings_goal` |
-| 저축 기록 | `databases.savings_record` |
-| 투자 관리 | `databases.investment` |
+| `databases.monthly_budget` | 월별 예산 |
+| `databases.fixed_expense` | 고정지출 항목 |
+| `databases.income_expense` | 수입/지출 |
+| `databases.debt` | 빚 정리 |
+| `databases.repayment` | 상환 기록 |
+| `databases.savings_goal` | 저축 목표 |
+| `databases.savings_record` | 저축 기록 |
+| `databases.investment` | 투자 관리 |
+
+Notion API에 `data_source_id`나 `collection://` ID가 필요할 때, 위 config에서 읽은 값을 사용한다. 절대 ID를 추측하거나 검색으로 찾지 않는다.
 
 ## 핵심 구조: 월별 예산
 
