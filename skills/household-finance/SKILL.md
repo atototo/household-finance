@@ -2,7 +2,7 @@
 name: household-finance
 description: "부부 가계부 Notion 관리 스킬. 월별 예산(잔여예산=남은돈), 수입/지출 기록, 빚 상환, 저축, 투자, 고정지출 관리를 Notion DB에 기록·조회한다. 자연어(오늘 점심 12000원 카드), 문자 복사(카드 결제 알림), 은행 PDF 등 다양한 입력을 파싱하여 자동 기록. 반드시 이 스킬을 사용할 트리거: 가계부, 지출, 수입, 상환, 저축, 투자, 매수, 매도, 기록해줘, 얼마 썼어, 빚 현황, 이번 달 지출, 저축 진행률, 예산, 잔여예산, 남은 돈, 월급, 고정지출, 할부, 카드 결제 문자, 갚았어, 넣었어, 적금, 예산 만들어줘, 예산 얼마 남았어 등."
 allowed-tools:
-  - "mcp__notion*"
+  - "mcp__claude_ai_Notion__*"
 ---
 
 # 부부 가계부 스킬
@@ -11,7 +11,22 @@ allowed-tools:
 
 ## 시작 전
 
-반드시 이 스킬 디렉토리의 `references/notion-schema.md`를 읽어서 DB ID와 스키마를 확인한다.
+1. 반드시 이 스킬 디렉토리의 `references/notion-schema.md`를 읽어서 DB 스키마를 확인한다.
+2. DB ID는 플러그인 settings.json의 환경변수에서 가져온다:
+
+| DB | 환경변수 |
+|---|---|
+| 월별 예산 | `$HOUSEHOLD_FINANCE_DB_MONTHLY_BUDGET` |
+| 고정지출 항목 | `$HOUSEHOLD_FINANCE_DB_FIXED_EXPENSE` |
+| 수입/지출 | `$HOUSEHOLD_FINANCE_DB_INCOME_EXPENSE` |
+| 빚 정리 | `$HOUSEHOLD_FINANCE_DB_DEBT` |
+| 상환 기록 | `$HOUSEHOLD_FINANCE_DB_REPAYMENT` |
+| 저축 목표 | `$HOUSEHOLD_FINANCE_DB_SAVINGS_GOAL` |
+| 저축 기록 | `$HOUSEHOLD_FINANCE_DB_SAVINGS_RECORD` |
+| 투자 관리 | `$HOUSEHOLD_FINANCE_DB_INVESTMENT` |
+
+환경변수가 비어있으면 사용자에게 Notion DB ID 설정을 안내한다:
+"household-finance 플러그인의 settings.json에 Notion DB ID를 설정해주세요. 플러그인 경로의 settings.json > env 항목에 각 DB의 data_source_id를 입력하면 됩니다."
 
 ## 핵심 구조: 월별 예산
 
@@ -78,7 +93,7 @@ allowed-tools:
 
 ### 수입/지출 기록
 ```
-parent: { data_source_id: "3af150e7-f514-48d8-9067-08ca171dfafd" }
+parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_INCOME_EXPENSE }
 properties:
   내역, 날짜, 구분, 카테고리, 금액, 결제수단, 담당, 메모
   월별예산: "https://www.notion.so/{해당월예산페이지ID}"
@@ -86,7 +101,7 @@ properties:
 
 ### 상환 기록
 ```
-parent: { data_source_id: "bc950e16-c1b8-4adc-b202-a88f11b65c59" }
+parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_REPAYMENT }
 properties:
   내역, 대상 빚, 날짜, 유형, 금액, 메모
   월별예산: "https://www.notion.so/{해당월예산페이지ID}"
@@ -94,7 +109,7 @@ properties:
 
 ### 저축 기록
 ```
-parent: { data_source_id: "bb0410e0-29ca-4cd2-bfdb-8cdd78b4ba89" }
+parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_SAVINGS_RECORD }
 properties:
   내역, 대상 목표, 날짜, 유형, 금액, 메모
   월별예산: "https://www.notion.so/{해당월예산페이지ID}"
@@ -102,14 +117,14 @@ properties:
 
 ### 투자 매매 기록
 ```
-parent: { data_source_id: "1102d9aa-21d7-47a0-bf19-2b80509e3092" }
+parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_INVESTMENT }
 properties:
   종목명, 유형, 매매유형, 매매일, 단가, 보유 수량, 금액, 담당, 메모
 ```
 
 ### 고정지출 항목 등록
 ```
-parent: { data_source_id: "f86b7714-2c1f-444b-896e-4a1774838774" }
+parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_FIXED_EXPENSE }
 properties:
   항목명, 담당, 유형(완전고정/변동고정), 예산금액, 카테고리,
   적용시작, 적용종료(영구면 비움), 활성(__YES__), 메모
@@ -117,7 +132,7 @@ properties:
 
 ### 월별 예산 생성/수정
 ```
-parent: { data_source_id: "54c745de-4af9-49ca-ae0a-b6d2083edd07" }
+parent: { data_source_id: $HOUSEHOLD_FINANCE_DB_MONTHLY_BUDGET }
 properties:
   월 예산: "2026년 5월 남편", 담당, 월급, 월,
   고정지출 항목: [필터된 고정지출 페이지 URL JSON 배열]
